@@ -1,3 +1,6 @@
+#This script performs Langevin dynamics simulations for different diffusion coefficients using a KL divergence threshold of 0.03.  
+#It computes and plots KL divergence vs. lag time and extracts the effective memory time τ_M when the divergence falls below the threshold.
+
 #SIMULACIONES CON THRESHOLD DE 0.03
 import os
 import json
@@ -45,14 +48,14 @@ def adjust_range_numba(arr, eps=1e-3, pad=0.1):
     padding = (mx - mn) * pad
     return (mn - padding, mx + padding)
 
-# Test de Markov con divergencia KL usando KDEpy
+# Test de Markov con divergencia KL 
 def parzen_markov_test_fft(x, lag, M=50):
     # Construye series rezagadas
     X1 = x[:-2*lag:lag]
     X2 = x[lag:-lag:lag]
     X3 = x[2*lag::lag]
 
-    # Evita tamaños de muestra demasiado pequeños
+    #quita tamaños demasiado pequeños
     if len(X1) < 2 or len(X2) < 2 or len(X3) < 2:
         return np.nan
 
@@ -107,7 +110,7 @@ def parzen_markov_test_fft(x, lag, M=50):
         p123 = np.clip(p123, 1e-10, None)
         p123 /= np.sum(p123) * dx1 * dx2 * dx3
 
-        # Construye la distribución markoviana ideal
+        # distribución markoviana ideal
         pcond = p23 / p2[:, np.newaxis]
         p_markov = np.einsum('ij,jk->ijk', p12, pcond)
         p_markov /= np.sum(p_markov) * dx1 * dx2 * dx3
@@ -118,7 +121,6 @@ def parzen_markov_test_fft(x, lag, M=50):
     except Exception:
         return np.nan
 
-# Precomputa lags
 lag_steps = np.unique(np.round(np.logspace(0, 3, 50)).astype(int))
 lag_times = lag_steps * dt
 
@@ -143,7 +145,7 @@ def run_simulation_for_D(D_val):
     np.savez(cache_file, avg_kl=avg_kl)
     return lag_times, avg_kl
 
-# Ejecución cuando se llama como script
+# Ejecución
 if __name__ == "__main__":
     D_list = [0.01, 0.03, 0.05, 0.1, 0.2, 0.5, 0.8, 1.0, 2.0, 5.0]
 
@@ -167,7 +169,7 @@ if __name__ == "__main__":
     plt.savefig("KL_vs_tau_vs_D_100runs.svg", dpi=300)
     plt.show()
 
-    # Cálculo de tau_M(D) con threshold observado
+    # tau_M(D) con threshold observado
     epsilon = 0.03
     tau_M_list = []
     for D_val in D_list:

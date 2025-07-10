@@ -1,13 +1,5 @@
-#!/usr/bin/env python3
-"""
-kl_vs_D_physical_tau_fixed.py
-
-Simulación Langevin + divergencia KL vs τ para distintos valores de D.
-Incluye dos métodos para estimar el τ_M físico:
-  1) Suavizado + primer mínimo local en la curva suavizada de KL.
-  2) Umbral relativo pequeño sobre el mínimo global de KL.
-Mejoras: cálculo de anchos de banda adaptados a cada dimensión (1D, 2D, 3D).
-"""
+#This script simulates Langevin dynamics for various diffusion coefficients and computes the KL divergence as a function of lag time.  
+#It then identifies the effective memory time τ_M using both a smoothed local minimum and a small relative threshold method.
 import os
 import json
 import hashlib
@@ -162,7 +154,7 @@ def tau_by_small_relative(lag_times, kl_vals, delta=0.01):
     idx = np.where(kl_arr <= threshold)[0]
     return lag_times[idx[0]] if idx.size > 0 else np.nan
 
-# Función principal: simula y devuelve KL_promedio para cada D
+# simula y devuelve KL_promedio para cada D
 def run_simulation_for_D(D_val):
     params = {"dt": dt, "T": T, "N": N, "D": D_val,
               "gamma": gamma, "n_runs": n_runs, "a": a, "b": b, "h": h}
@@ -221,7 +213,7 @@ if __name__ == "__main__":
     for D, tauM in zip(D_list, tau_M_relative):
         print(f"D = {D:.3f}, τ_M = {tauM}")
 
-    # Graficar KL vs τ con líneas verticales para ambos criterios
+    # KL vs τ con líneas verticales para ambos 
     plt.figure(figsize=(10, 6))
     for i, D_val in enumerate(D_list):
         avg_kl = results[D_val]
@@ -249,7 +241,7 @@ if __name__ == "__main__":
     plt.savefig("KL_vs_tau_with_two_tauM_methods.svg", dpi=300)
     plt.show()
 
-    # Graficar τ_M vs D para cada criterio
+    # τ_M vs D para cada criterio
     plt.figure(figsize=(8, 5))
     plt.plot(D_list, tau_M_smooth, "o-", label="tau_M (smooth + local min)")
     plt.plot(D_list, tau_M_relative, "s--", label="tau_M (small relative)")
@@ -264,7 +256,7 @@ if __name__ == "__main__":
     plt.savefig("tauM_vs_D_comparison.svg", dpi=300)
     plt.show()
 
-    # Exportar resultados a CSV
+    # resultados a CSV
     with open("tauM_vs_D_physical.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["D", "tauM_smooth", "tauM_relative"])

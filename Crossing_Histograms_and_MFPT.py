@@ -4,7 +4,8 @@ import seaborn as sns
 import pandas as pd
 from numba import njit
 from tqdm import tqdm
-#ESTE CODIGO ME GENERA LOS HISTOGRAMAS DE CRUCE HACIA ADELANTE Y HACIA ATRAS, ASI COMO LOS TIEMPOS MEDIOS DE CRUCE (MFPT) PARA DIFERENTES COEFICIENTES DE DIFUSION D
+#This script simulates Langevin dynamics in a double-well potential for various diffusion coefficients,  
+#Generates histograms of forward and backward barrier crossing times, and computes mean first-passage times (MFPT) with their standard deviations.
 # param generales
 dt = 1/250           # Paso de tiempo (s)
 T = 10               # Tiempo total (s)
